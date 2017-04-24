@@ -4,13 +4,12 @@
 #include <cassert>
 
 #include <iostream>
-#include <tuple>
 
 void ClientServerExemple();
 void RequestGoogleMainPage();
 
 int main() {
-  RequestGoogleMainPage();
+  ClientServerExemple();
   
   return 0;
 }
@@ -24,11 +23,8 @@ void ClientServerExemple() {
     if (client.Connect("127.0.0.1", 15263))
       throw std::runtime_error("Connect " + client.GetLastError());
     
-    network::TcpSocket new_connection;
-    int error;
-    
-    std::tie(new_connection, error) = server.Accept();
-    if(error < 0)
+    auto new_connection = server.Accept();
+    if(!new_connection)
       throw std::runtime_error("Accept " + server.GetLastError());
     
     int n = client.Write("Hello, World!");
@@ -58,7 +54,7 @@ void RequestGoogleMainPage() {
 GET / HTTP/1.1\r\n\
 Host: www.google.com\r\n\
 Accept: text/html;\r\n\
-Accept-Language: en-us,en;\
+Accept-Language: en-us,en;\r\n\
 Accept-Charset: utf-8;\r\n\
 Connection: close\r\n\
 Cache-Control: no-cache;\r\n\r\n";

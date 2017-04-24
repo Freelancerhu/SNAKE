@@ -41,14 +41,13 @@ int TcpSocket::Connect(const std::string &address, uint16_t port,
   return 1;
 }
 
-std::pair<TcpSocket, int> TcpSocket::Accept(uint64_t milliseconds) {
+TcpSocket TcpSocket::Accept(uint64_t milliseconds) {
   pollfd fdarray[1] = {{file_descriptor_, POLLIN, 0}};
   auto ret = poll(fdarray, 1, milliseconds);
   if (ret <= 0)
-    return {TcpSocket(ret), ret};
+    return TcpSocket(-1);
   
-  ret = accept(file_descriptor_, nullptr, nullptr);
-  return {TcpSocket(ret), ret};
+  return TcpSocket(accept(file_descriptor_, nullptr, nullptr));
 }
 
 int TcpSocket::Read(char *first, char *last, uint64_t milliseconds) {

@@ -67,12 +67,11 @@ class TcpSocket {
                    static_cast<std::chrono::milliseconds>(duration).count());
   }
   
-  std::pair<TcpSocket, int> Accept() {
-    auto ret = accept(file_descriptor_, nullptr, nullptr);
-    return {TcpSocket(ret), ret};
+  TcpSocket Accept() {
+    return TcpSocket(accept(file_descriptor_, nullptr, nullptr));
   }
   template <class Rep, class Period>
-  std::pair<TcpSocket, int> Accept(
+  TcpSocket Accept(
       const std::chrono::duration<Rep, Period> &duration) {
     assert(duration.count() >= 0);
     return Accept(static_cast<std::chrono::milliseconds>(duration).count());
@@ -112,12 +111,16 @@ class TcpSocket {
     return close(file_descriptor_);
   }
   
+  explicit operator bool() {
+    return file_descriptor_>=0;
+  }
+  
   std::string GetLastError() const {
     return strerror(errno);
   }
   
  private:
-  std::pair<TcpSocket, int> Accept(uint64_t milliseconds);
+  TcpSocket Accept(uint64_t milliseconds);
   int Connect(const std::string &address, uint16_t port, uint64_t milliseconds);
   int Read(char *first, char *last, uint64_t milliseconds);
   int Write(const char *first, const char *last, uint64_t milliseconds);
