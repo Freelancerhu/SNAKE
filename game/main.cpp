@@ -1,12 +1,12 @@
 #include <iostream>
 #include <list>
 #include <vector>
-#include <conio.h>
+#include <curses.h>
 #include <stdlib.h>
 #include <chrono>
 #include <thread>
-#include <windows.h>
 #include <cstdlib>
+#include <memory>
 
 // std::this_thread::sleep_for(interval - (time2 - time1)) #interface
 
@@ -22,7 +22,79 @@
 
 // input check_input #input
 
+// A simple curses class (singleton)
 
+class Curses {
+ public:
+  static Curses &Get() {
+    if (curses == nullptr)
+      curses.reset(new Curses());
+    return *curses.get();
+  }
+  
+  ~Curses() {
+    delwin(mainwin_);
+    endwin();
+    refresh();
+  }
+  
+  int PoseCursor(int row, int col) {
+    return move(row, col);
+  }
+  
+  int InsertCh(int ch) {
+    return addch(ch);
+  }
+  
+  int InsertChAt(int row, int col, int ch) {;
+    return mvaddch(row, col, ch);
+  }
+
+  int GetInput() {
+    if (no_delay_ == false) {
+      nodelay(stdscr, true);
+      no_delay_ = true;
+    }
+    return getch();
+  }
+  
+  int WaitForInput() {
+    if (no_delay_ == true) {
+      nodelay(stdscr, false);
+      no_delay_ = false;
+    }
+    return getch();
+  }
+  
+  int Clear() {
+    clear();
+  }
+  
+  int Refresh() {
+    return refresh();
+  }
+  
+ private:
+  Curses() {
+    if (mainwin_ == nullptr)
+      throw std::runtime_error("initsrc failed");
+  }
+  
+  Curses(const Curses &) = delete;
+  Curses(Curses &&) = delete;
+  
+  Curses &operator=(const Curses &) = delete;
+  Curses &operator==(Curses &&) = delete;
+  
+  WINDOW *mainwin_ = initscr();
+  bool no_delay_ = false;
+  
+  static std::unique_ptr<Curses> curses;
+};
+
+std::unique_ptr<Curses> Curses::curses{nullptr};
+
+// the body of game
 struct coord {
   int x = 0;
   int y = 0;
@@ -35,12 +107,14 @@ void printMap(std::vector<coord> &A, std::vector<coord> &eggVec, int sMap[][20],
   }
   sMap[eggVec[0].x][eggVec[0].y] = 7;
   for (int i = 0; i < len; ++i) {
+		Curses::Get().PoseCursor(i, 6);
     for (int j = 0; j < len; ++j) {
-      std::cout << sMap[i][j];
+	  	Curses::Get().InsertCh(sMap[i][j] - '0');
     }
-    std::cout << std::endl;
+		Curses::Get().InsertCh('\n');
   }
-  std::cout << "Length of your Snake : " << A.size() << std::endl;
+	Curses::Get().InsertCh('\n');
+	printw("Length of your Snake : %d", A.size());
 }
 
 bool controlSnake(std::vector<coord> &A, std::vector<coord> &eggVec, char index) {
@@ -131,15 +205,19 @@ int main() {
 
   std::vector<coord> eggVec;
   char index = 'd';
+
+	
   for (;;) {
-    system("cls");
+    clear();
     int sMap[20][20]{0};
     layEgg(snaVec, eggVec);
+		Curses::Get().Clear();
     printMap(snaVec, eggVec, sMap, 20);
+		Curses::Get().Refresh();
     std::chrono::duration<double, std::milli> ms(100);
     std::this_thread::sleep_for(ms);
-    if (_kbhit()) {
-      char tempIndex = _getch();
+		char tempIndex = Curses::Get().GetInput();
+    if (tempIndex != ERR) {
       switch (tempIndex) {
         case 'w':
           if (snaVec[1].x - snaVec[0].x != -1)
@@ -159,13 +237,13 @@ int main() {
           break;
         default:
           ;
-      }
-
+      } 
       if (controlSnake(snaVec, eggVec, index)) {
           continue;
       } else {
           break;
       }
+
     } else {
       if (controlSnake(snaVec, eggVec,index)) {
           continue;
@@ -174,7 +252,10 @@ int main() {
       }
     }
   }
-  std::cout << "GG" << std::endl;
-
+  //std::cout << "GG" << std::endl;
+  Curses::Get().Clear();
+  Curses::Get().InsertCh('g');
+  Curses::Get().InsertCh('g');
+  Curses::Get().Refresh();
   return 0;
 }
