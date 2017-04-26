@@ -163,7 +163,12 @@ public:
     for (int i = 0; i < map.Map_Row(); ++i) {
 			Curses::Get().PoseCursor(i, 6);
       for (int j = 0; j < map.Map_column(); ++j) {
-        Curses::Get().InsertCh(map.Map_Val(i, j) - '0');
+        if (map.Map_Val(i, j) == 0)
+          Curses::Get().InsertCh('.');
+        else if (map.Map_Val(i, j) == 1)
+          Curses::Get().InsertCh('#');
+        else
+          Curses::Get().InsertCh('@');
       }
       Curses::Get().InsertCh('\n');
     }
