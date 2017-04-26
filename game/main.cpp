@@ -107,11 +107,11 @@ void printMap(std::vector<coord> &A, std::vector<coord> &eggVec, int sMap[][20],
   }
   sMap[eggVec[0].x][eggVec[0].y] = 7;
   for (int i = 0; i < len; ++i) {
-		Curses::Get().PoseCursor(i, 6);
+      Curses::Get().PoseCursor(i, 6);
     for (int j = 0; j < len; ++j) {
-	  	Curses::Get().InsertCh(sMap[i][j] - '0');
+      Curses::Get().InsertCh(sMap[i][j] - '0');
     }
-		Curses::Get().InsertCh('\n');
+	Curses::Get().InsertCh('\n');
   }
 	Curses::Get().InsertCh('\n');
 	printw("Length of your Snake : %d", A.size());
@@ -211,12 +211,12 @@ int main() {
     clear();
     int sMap[20][20]{0};
     layEgg(snaVec, eggVec);
-		Curses::Get().Clear();
+    Curses::Get().Clear();
     printMap(snaVec, eggVec, sMap, 20);
-		Curses::Get().Refresh();
+    Curses::Get().Refresh();
     std::chrono::duration<double, std::milli> ms(100);
     std::this_thread::sleep_for(ms);
-		char tempIndex = Curses::Get().GetInput();
+	char tempIndex = Curses::Get().GetInput();
     if (tempIndex != ERR) {
       switch (tempIndex) {
         case 'w':

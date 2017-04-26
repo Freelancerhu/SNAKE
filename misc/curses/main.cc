@@ -83,14 +83,14 @@ int main(void) {
   Curses::Get().Refresh();
   std::this_thread::sleep_for(std::chrono::seconds(1));
   
-
+  Curses::Get().Clear();
   Curses::Get().InsertCh('b');
   Curses::Get().Refresh();
   std::this_thread::sleep_for(std::chrono::seconds(1));
   
   int ch = Curses::Get().GetInput();
   Curses::Get().InsertCh(ch);
-  
+  Curses::Get().Refresh();
   std::this_thread::sleep_for(std::chrono::seconds(1));
   
   return 0;
