@@ -39,7 +39,7 @@ class Curses {
     }
     return getch();
   }
-  
+  //if (GetInput == ERR)
   int WaitForInput() {
     if (no_delay_ == true) {
       nodelay(stdscr, false);
