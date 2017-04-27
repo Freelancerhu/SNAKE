@@ -24,16 +24,16 @@
 
 // A simple curses class (singleton)
 
-class Curses {
+class Cursor {
  public:
-  static Curses &Get() {
-    if (curses == nullptr)
-      curses.reset(new Curses());
-    return *curses.get();
+  static Cursor &Get() {
+    if (cursor == nullptr)
+      cursor.reset(new Cursor());
+    return *cursor.get();
   }
   
-  ~Curses() {
-    delwin(mainwin_);
+  ~Cursor() {
+    delwin(main_window_);
     endwin();
     refresh();
   }
@@ -75,30 +75,30 @@ class Curses {
   }
   
  private:
-  Curses() {
-    if (mainwin_ == nullptr)
+  Cursor() {
+    if (main_window_ == nullptr)
       throw std::runtime_error("initsrc failed");
   }
   
-  Curses(const Curses &) = delete;
-  Curses(Curses &&) = delete;
+  Cursor(const Cursor &) = delete;
+  Cursor(Cursor &&) = delete;
   
-  Curses &operator=(const Curses &) = delete;
-  Curses &operator==(Curses &&) = delete;
+  Cursor &operator=(const Cursor &) = delete;
+  Cursor &operator==(Cursor &&) = delete;
   
-  WINDOW *mainwin_ = initscr();
+  WINDOW *main_window_ = initscr();
   bool no_delay_ = false;
   
-  static std::unique_ptr<Curses> curses;
+  static std::unique_ptr<Cursor> cursor;
 };
 
-std::unique_ptr<Curses> Curses::curses{nullptr};
+std::unique_ptr<Cursor> Cursor::cursor{nullptr};
 
 // The body of game
-struct coord {
+struct Coord {
   int x = 0;
   int y = 0;
-  coord(int x1, int y1): x(x1), y(y1){}
+  Coord(int x1, int y1): x(x1), y(y1){}
 };
 
 
@@ -107,78 +107,78 @@ public:
   Map() {}
 
   ~Map() {
-    gamemap_.clear();
+    game_map_.clear();
   }
 
-  void Reset_Map() {
-    for (size_t  i = 0; i < gamemap_.size(); ++i) {
-        for (size_t j = 0; j < gamemap_[0].size(); ++j) {
-            gamemap_[i][j] = 0;
+  void ResetMap() {
+    for (size_t  i = 0; i < game_map_.size(); ++i) {
+        for (size_t j = 0; j < game_map_[0].size(); ++j) {
+            game_map_[i][j] = 0;
           }
       }
   }
 
-  void Snk_On_Map(const std::vector<coord> &snavec_) {
+  void SnkOnMap(const std::vector<Coord> &snavec_) {
     for (auto z : snavec_) {
-      gamemap_[z.x][z.y] = 1;
+      game_map_[z.x][z.y] = 1;
     }
   }
 
-  void Egg_On_Map(const std::vector<coord> &eggvec_) {
+  void EggOnMap(const std::vector<Coord> &eggvec_) {
     for (auto z : eggvec_) {
-      gamemap_[z.x][z.y] = 2;
+      game_map_[z.x][z.y] = 2;
     }
   }
 
-  void Init_Map(int x, int y) {
+  void InitMap(int x, int y) {
     for (int i = 0; i < y; ++i) {
         std::vector<int> temp;
       for (int j = 0; j < x; ++j) {
         temp.push_back(0);
       }
-      gamemap_.push_back(temp);
+      game_map_.push_back(temp);
     }
   }
 
-  int Map_Row() const {
-    return gamemap_.size();
+  int MapRow() const {
+    return game_map_.size();
   }
 
-  int Map_column() const {
-    return gamemap_[0].size();
+  int MapColumn() const {
+    return game_map_[0].size();
   }
 
-  int Map_Val(int &x, int &y) const {
-    return gamemap_[x][y];
+  int MapVal(int &x, int &y) const {
+    return game_map_[x][y];
   }
 
 private:
-  std::vector<std::vector<int>> gamemap_;
+  std::vector<std::vector<int>> game_map_;
 };
 
-class printMap {
+class View {
 public:
-  void Print_Map(const Map &map) {
-		Curses::Get().Clear();
-    for (int i = 0; i < map.Map_Row(); ++i) {
-			Curses::Get().PoseCursor(i, 6);
-      for (int j = 0; j < map.Map_column(); ++j) {
-        if (map.Map_Val(i, j) == 0)
-          Curses::Get().InsertCh('.');
-        else if (map.Map_Val(i, j) == 1)
-          Curses::Get().InsertCh('#');
+  static void PrintMap(const Map &map) {
+		Cursor::Get().Clear();
+    for (int i = 0; i < map.MapRow(); ++i) {
+			Cursor::Get().PoseCursor(i, 6);
+      for (int j = 0; j < map.MapColumn(); ++j) {
+        if (map.MapVal(i, j) == 0)
+          Cursor::Get().InsertCh('.');
+        else if (map.MapVal(i, j) == 1)
+          Cursor::Get().InsertCh('#');
         else
-          Curses::Get().InsertCh('@');
+          Cursor::Get().InsertCh('@');
       }
-      Curses::Get().InsertCh('\n');
+      Cursor::Get().InsertCh('\n');
     }
-		Curses::Get().Refresh();
+		Cursor::Get().Refresh();
   }
 };
 
-class controlSnake {
+class ControlSnake {
 public:
-  bool Control_Snake(std::vector<coord> &A, std::vector<coord> &eggVec, char index) {
+  bool Control(std::vector<Coord> &snake, std::vector<Coord> &egg, char index) {
     int dx = 0, dy = 0;
     static int delta[][2] = {
       {-1, 0},
@@ -204,25 +204,25 @@ public:
     }
     dx = delta[direction][0];
     dy = delta[direction][1];
-    if (A[0].x+dx<0 || A[0].y+dy<0 ||
-        A[0].x+dx>=20 || A[0].y+dy>=20)
+    if (snake[0].x+dx<0 || snake[0].y+dy<0 ||
+        snake[0].x+dx>=20 || snake[0].y+dy>=20)
       return false;
 
-    for (int i = A.size() - 1; i > 0; --i) {
-      A[i].x = A[i - 1].x;
-      A[i].y = A[i - 1].y;
+    for (int i = snake.size() - 1; i > 0; --i) {
+      snake[i].x = snake[i - 1].x;
+      snake[i].y = snake[i - 1].y;
     }
-    A[0].x = A[0].x + dx;
-    A[0].y = A[0].y + dy;
-    for (int i = 1; i < A.size(); ++i) {
-        if (A[0].x == A[i].x && A[0].y == A[i].y)
+    snake[0].x = snake[0].x + dx;
+    snake[0].y = snake[0].y + dy;
+    for (int i = 1; i < snake.size(); ++i) {
+        if (snake[0].x == snake[i].x && snake[0].y == snake[i].y)
             return false;
     }
 
-    if (A[0].x == eggVec[0].x && A[0].y == eggVec[0].y) {
-      eggVec.clear();
-      int tempX = A.back().x, tempY = A.back().y;
-      A.push_back(coord(tempX, tempY));
+    if (snake[0].x == egg[0].x && snake[0].y == egg[0].y) {
+      egg.clear();
+      int temp_x = snake.back().x, temp_y = snake.back().y;
+      snake.push_back(Coord(temp_x, temp_y));
     }
     return true;
   }
@@ -230,84 +230,81 @@ public:
 
 class Model {
 public:
-  Model() {}
-  ~Model() {
-    snavec_.clear();
-    eggvec_.clear();
+  Model() = default;
+  ~Model() = default;
+
+  void GeneSnake() {
+    snake_.push_back(Coord(5, 7));
+    snake_.push_back(Coord(5, 6));
+    snake_.push_back(Coord(5, 5));
+    snake_.push_back(Coord(5, 4));
+    snake_.push_back(Coord(5, 3));
+    map_.SnkOnMap(snake_);
   }
 
-  void Gene_Snake() {
-    snavec_.push_back(coord(5, 7));
-    snavec_.push_back(coord(5, 6));
-    snavec_.push_back(coord(5, 5));
-    snavec_.push_back(coord(5, 4));
-    snavec_.push_back(coord(5, 3));
-    map_.Snk_On_Map(snavec_);
-  }
-
-  void Gene_Egg() {
-    if (eggvec_.empty()){
+  void GeneEgg() {
+    if (egg_.empty()){
       for (;;) {
         int vx = rand() % 19 + 0;
         int vy = rand() % 19 + 0;
         int i = 0;
-        for (auto z : snavec_) {
+        for (auto z : snake_) {
           if (z.x == vx && z.y == vy) {
             ++i;
           }
         }
         if (i == 0) {
-          eggvec_.push_back(coord(vx, vy));
-          map_.Egg_On_Map(eggvec_);
+          egg_.push_back(Coord(vx, vy));
+          map_.EggOnMap(egg_);
           return;
         }
       }
     }
   }
 
-  void Set_Map(int x, int y) {
-    map_.Init_Map(x, y);
+  void SetMap(int x, int y) {
+    map_.InitMap(x, y);
   }
 
   bool Run(char &index) {
-    Gene_Egg();
-    map_.Reset_Map();
-    map_.Snk_On_Map(snavec_);
-    map_.Egg_On_Map(eggvec_);
-    printmap_.Print_Map(map_);
-		Curses::Get().InsertCh('\n');
-    std::cout << "Length of your Snake : " << snavec_.size() << std::endl;
+    GeneEgg();
+    map_.ResetMap();
+    map_.SnkOnMap(snake_);
+    map_.EggOnMap(egg_);
+    View::PrintMap(map_);
+		Cursor::Get().InsertCh('\n');
+    std::cout << "Length of your Snake : " << snake_.size() << std::endl;
     std::chrono::duration<double, std::milli> ms(100);
     std::this_thread::sleep_for(ms);
-		char tempIndex = Curses::Get().GetInput();
+		char tempIndex = Cursor::Get().GetInput();
     if (tempIndex != ERR) {
       switch (tempIndex) {
         case 'w':
-          if (snavec_[1].x - snavec_[0].x != -1)
+          if (snake_[1].x - snake_[0].x != -1)
             index = tempIndex;
           break;
         case 's':
-          if (snavec_[1].x - snavec_[0].x != 1)
+          if (snake_[1].x - snake_[0].x != 1)
             index = tempIndex;
           break;
         case 'a':
-          if (snavec_[1].y - snavec_[0].y != -1)
+          if (snake_[1].y - snake_[0].y != -1)
             index = tempIndex;
           break;
         case 'd':
-          if (snavec_[1].y - snavec_[0].y != 1)
+          if (snake_[1].y - snake_[0].y != 1)
             index = tempIndex;
           break;
         default:
           ;
       }
-      if (controlsnake_.Control_Snake(snavec_, eggvec_, index)) {
+      if (control_snake_.Control(snake_, egg_, index)) {
           return true;
       } else {
           return false;
       }
     } else {
-      if (controlsnake_.Control_Snake(snavec_, eggvec_, index)) {
+      if (control_snake_.Control(snake_, egg_, index)) {
           return true;
       } else {
           return false;
@@ -317,24 +314,24 @@ public:
 
 private:
   Map map_;
-  printMap printmap_;
-  controlSnake controlsnake_;
-  std::vector<coord> snavec_;
-  std::vector<coord> eggvec_;
+  ControlSnake control_snake_;
+  std::vector<Coord> snake_;
+  std::vector<Coord> egg_;
 };
-
-
 
 int main() {
   srand(time(NULL));
+  
   Model model;
-  model.Set_Map(20, 20);
-  model.Gene_Snake();
+  model.SetMap(20, 20);
+  model.GeneSnake();
+  
   char index = 'd';
   while (model.Run(index));
-  Curses::Get().Clear();
-  Curses::Get().InsertCh('g');
-  Curses::Get().InsertCh('g');
-  Curses::Get().Refresh();
+  
+  Cursor::Get().Clear();
+  Cursor::Get().InsertCh('g');
+  Cursor::Get().InsertCh('g');
+  Cursor::Get().Refresh();
   return 0;
 }
