@@ -40,11 +40,11 @@ bool Model::Run(char &index) {
   map_.SnkOnMap(snake_);
   map_.EggOnMap(egg_);
   View::PrintMap(map_);
-              Cursor::Get().InsertCh('\n');
+  Cursor::Get().InsertCh('\n');
   std::cout << "Length of your Snake : " << snake_.size() << std::endl;
   std::chrono::duration<double, std::milli> ms(100);
   std::this_thread::sleep_for(ms);
-              char tempIndex = Cursor::Get().GetInput();
+  char tempIndex = Cursor::Get().GetInput();
   if (tempIndex != ERR) {
     switch (tempIndex) {
       case 'w':
