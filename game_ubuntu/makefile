@@ -6,9 +6,9 @@ FLAG=-std=c++11
 
 OBJS=control-snake.o coord.o cursor.o map.o view.o model.o
 
-all : main.o clean
+all : main clean
 
-main.o : $(OBJS)
+main : $(OBJS)
 	$(CC) $(FLAG) -I $(IDIR) main.cpp *.o -lncurses
 
 %.o : $(SDIR)/%.cpp $(IDIR)/%.h

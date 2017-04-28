@@ -1,8 +1,9 @@
 #ifndef _SNAKEMAP_H
 #define _SNAKEMAP_H
 
-#include <coord.h>
 #include <vector>
+
+#include "coord.h"
 
 class Map {
 public:
