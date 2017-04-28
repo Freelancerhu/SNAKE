@@ -1,7 +1,10 @@
-#ifndef CURSOR_H
-#define CURSOR_H
+#ifndef _SNAKE_CURSOR_H
+#define _SNAKE_CURSOR_H
+
 #include <curses.h>
+
 #include <memory>
+
 class Cursor {
  public:
   static Cursor &Get();
@@ -40,5 +43,4 @@ class Cursor {
   static std::unique_ptr<Cursor> cursor;
 };
 
-std::unique_ptr<Cursor> Cursor::cursor{nullptr};
-#endif // CURSOR_H
+#endif // _SNAKE_CURSOR_H

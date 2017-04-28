@@ -1,5 +1,10 @@
 #include "model.h"
 
+#include <iostream>
+#include <thread>
+
+#include "cursor.h"
+#include "view.h"
 
 void Model::GeneSnake() {
   snake_.push_back(Coord(5, 7));
@@ -79,4 +84,3 @@ bool Model::Run(char &index) {
     }
   }
 }
-

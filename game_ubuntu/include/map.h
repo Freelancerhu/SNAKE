@@ -1,7 +1,9 @@
-#ifndef MAP_H
-#define MAP_H
+#ifndef _SNAKEMAP_H
+#define _SNAKEMAP_H
+
 #include <coord.h>
 #include <vector>
+
 class Map {
 public:
   Map();
@@ -26,4 +28,4 @@ private:
   std::vector<std::vector<int>> game_map_;
 };
 
-#endif // MAP_H
+#endif // _SNAKEMAP_H

@@ -1,12 +1,15 @@
-#include "controlsnake.h"
+#include "control-snake.h"
 
-bool ControlSnake::Control(std::vector<Coord> &snake, std::vector<Coord> &egg, char index) {
+bool ControlSnake::Control(std::vector<Coord> &snake, std::vector<Coord> &egg,
+                           char index) {
   int dx = 0, dy = 0;
+  
   static int delta[][2] = {
     {-1, 0},
     {1, 0},
     {0, -1},
     {0, 1}};
+  
   int direction = 0;
   switch (index) {
     case 'w':
@@ -24,6 +27,7 @@ bool ControlSnake::Control(std::vector<Coord> &snake, std::vector<Coord> &egg, c
     default:
       ;
   }
+  
   dx = delta[direction][0];
   dy = delta[direction][1];
   if (snake[0].x+dx<0 || snake[0].y+dy<0 ||
@@ -37,8 +41,8 @@ bool ControlSnake::Control(std::vector<Coord> &snake, std::vector<Coord> &egg, c
   snake[0].x = snake[0].x + dx;
   snake[0].y = snake[0].y + dy;
   for (int i = 1; i < snake.size(); ++i) {
-      if (snake[0].x == snake[i].x && snake[0].y == snake[i].y)
-          return false;
+    if (snake[0].x == snake[i].x && snake[0].y == snake[i].y)
+        return false;
   }
 
   if (snake[0].x == egg[0].x && snake[0].y == egg[0].y) {

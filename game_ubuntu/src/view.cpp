@@ -1,6 +1,9 @@
 #include "view.h"
 
-static void View::PrintMap(const Map &map) {
+#include "cursor.h"
+#include "map.h"
+
+void View::PrintMap(const Map &map) {
               Cursor::Get().Clear();
   for (int i = 0; i < map.MapRow(); ++i) {
                       Cursor::Get().PoseCursor(i, 6);
