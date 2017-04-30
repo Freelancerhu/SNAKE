@@ -44,9 +44,9 @@ bool Model::Run(char &index) {
   map_.ResetMap();
   map_.SnkOnMap(snake_);
   map_.EggOnMap(egg_);
-  View::PrintMap(map_);
+  View::PrintMapSplit(map_, snake_, map_, snake_);
   Cursor::Get().InsertCh('\n');
-  std::cout << "Length of your Snake : " << snake_.size() << std::endl;
+  //std::cout << "Length of your Snake : " << snake_.size() << std::endl;
   std::chrono::duration<double, std::milli> ms(100);
   std::this_thread::sleep_for(ms);
   char tempIndex = Cursor::Get().GetInput();
