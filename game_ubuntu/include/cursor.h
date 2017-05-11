@@ -16,6 +16,8 @@ class Cursor {
   int InsertCh(int ch);
 
   int InsertChAt(int row, int col, int ch);
+  
+  int InsertStringAt(int row, int col, const char *str);
 
   int GetInput();
 
