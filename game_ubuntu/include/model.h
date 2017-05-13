@@ -8,6 +8,8 @@
 #include "map.h"
 #include "control-snake.h"
 #include "coord.h"
+#include "ViewInterface.h"
+#include "SingleView.h"
 
 class Model {
 public:
@@ -24,6 +26,8 @@ public:
 
 private:
   Map map_;
+  SingleView SV;
+  View *view = &SV;
   ControlSnake control_snake_;
   std::vector<Coord> snake_;
   std::vector<Coord> egg_;

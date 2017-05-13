@@ -26,7 +26,7 @@ int Cursor::InsertChAt(int row, int col, int ch) {;
   return mvaddch(row, col, ch);
 }
 
-int InsertStringAt(int row, int col, const char *str) {
+int Cursor::InsertStringAt(int row, int col, const char *str) {
   return mvaddstr(row, col, str);
 }
 

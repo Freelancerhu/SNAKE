@@ -12,8 +12,7 @@ int main() {
 
   char index = 'd';
   while (model.Run(index));
-
-  Cursor::Get().Clear();
+  //Cursor::Get().Clear();
   Cursor::Get().InsertCh('g');
   Cursor::Get().InsertCh('g');
   Cursor::Get().Refresh();

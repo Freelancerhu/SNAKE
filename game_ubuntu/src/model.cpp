@@ -1,10 +1,8 @@
 #include "model.h"
-
 #include <iostream>
 #include <thread>
 
 #include "cursor.h"
-#include "view.h"
 
 void Model::GeneSnake() {
   snake_.push_back(Coord(5, 7));
@@ -44,7 +42,10 @@ bool Model::Run(char &index) {
   map_.ResetMap();
   map_.SnkOnMap(snake_);
   map_.EggOnMap(egg_);
-  View::PrintMapSplit(map_, snake_, map_, snake_);
+  //View::PrintMapSplit(map_, snake_, map_, snake_);
+  view->SetMap(map_);
+  SV.SetScore(snake_);
+  SV.PrintMap();
   Cursor::Get().InsertCh('\n');
   //std::cout << "Length of your Snake : " << snake_.size() << std::endl;
   std::chrono::duration<double, std::milli> ms(100);

@@ -4,12 +4,12 @@ SDIR=src
 CC=g++
 FLAG=-std=c++11
 
-OBJS=control-snake.o coord.o cursor.o map.o view.o model.o
+OBJS=control-snake.o coord.o cursor.o map.o ViewInterface.o model.o SingleView.o
 
 all : main clean
 
 main : $(OBJS)
-	$(CC) $(FLAG) -I $(IDIR) main.cpp *.o -lncurses
+	$(CC) $(FLAG) -I $(IDIR) -fmax-errors=1 main.cpp *.o -lncurses 
 
 %.o : $(SDIR)/%.cpp $(IDIR)/%.h
 	$(CC) $(FLAG) -c -I $(IDIR) $<

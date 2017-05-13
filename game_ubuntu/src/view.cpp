@@ -19,8 +19,7 @@ void View::PrintMap(const Map &map) {
 }
 
 void View::PrintMapSplit(const Map &map1,const std::vector<Coord> snake_1, const Map &map2, const std::vector<Coord> snake_2) {
-	chtype chstr[23] = {'L', 'e','n','g','t','h',' ','o','f',' ','y','o','u','r',' ','S','n','a','k','e',' ',':',' '}; //23
-	//chtype chstr[] = "length of your snake : ";
+	char STR[] = "length of your snake : ";
 	int row = 0;
 	Cursor::Get().Clear();
   for (int i = 0; i < map1.MapRow(); ++i) {
@@ -36,8 +35,7 @@ void View::PrintMapSplit(const Map &map1,const std::vector<Coord> snake_1, const
     Cursor::Get().InsertCh('\n');
 		row = i;
   }
-	Cursor::Get().PoseCursor(row, 6);
-	addchstr(chstr);
+	Cursor::Get().InsertStringAt(row, 6, STR);
 	Cursor::Get().InsertChAt(row, 30, snake_1.size() + '0');
 	for (int i = 0; i < map2.MapRow(); ++i) {
 	Cursor::Get().PoseCursor(i, 60);
@@ -52,8 +50,7 @@ void View::PrintMapSplit(const Map &map1,const std::vector<Coord> snake_1, const
     Cursor::Get().InsertCh('\n');
 		row = i;
   }
-	Cursor::Get().PoseCursor(row, 60);
-	addchnstr(chstr, 23);
+  Cursor::Get().InsertStringAt(row, 60, STR);
 	Cursor::Get().InsertChAt(row, 84, snake_1.size() + '0');
 	Cursor::Get().Refresh();
 }
