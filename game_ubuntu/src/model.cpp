@@ -37,6 +37,10 @@ void Model::SetMap(int x, int y) {
   map_.InitMap(x, y);
 }
 
+int Model::PlayerScore() {
+  return snake_.size();
+}
+
 bool Model::Run(char &index) {
   GeneEgg();
   map_.ResetMap();
@@ -44,7 +48,7 @@ bool Model::Run(char &index) {
   map_.EggOnMap(egg_);
   //View::PrintMapSplit(map_, snake_, map_, snake_);
   view->SetMap(map_);
-  SV.SetScore(snake_);
+  SV.SetScore(PlayerScore());
   SV.PrintMap();
   Cursor::Get().InsertCh('\n');
   //std::cout << "Length of your Snake : " << snake_.size() << std::endl;

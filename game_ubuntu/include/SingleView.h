@@ -16,7 +16,7 @@ public:
   View& Refresh();
 	
   void PrintMap();
-  void SetScore(const std::vector<Coord> snake_);
+  void SetScore(const int &player_score_);
 
 private:
   std::vector<std::vector<int>> single_view_map_;

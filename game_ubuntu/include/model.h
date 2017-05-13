@@ -21,9 +21,10 @@ public:
   void GeneEgg();
 
   void SetMap(int x, int y);
+  
+  int PlayerScore();
 
   bool Run(char &index);
-
 private:
   Map map_;
   SingleView SV;

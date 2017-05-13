@@ -25,6 +25,7 @@ public:
 
   int MapVal(int &x, int &y) const;
 
+  std::vector<std::vector<int>> CopyMap() const;
 private:
   std::vector<std::vector<int>> game_map_;
 };

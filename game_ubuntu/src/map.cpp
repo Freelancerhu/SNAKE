@@ -47,3 +47,7 @@ int Map::MapColumn() const {
 int Map::MapVal(int &x, int &y) const {
   return game_map_[x][y];
 }
+
+std::vector<std::vector<int>> Map::CopyMap() const {
+  return game_map_;
+}
