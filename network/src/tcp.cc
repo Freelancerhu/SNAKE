@@ -7,6 +7,35 @@ namespace network {
   
 non_block_t non_block;
 
+struct SetNonblock {
+ public:
+  SetNonblock(int fd) : fd_(fd) {}
+  
+  int Set() {
+    flag_ = fcntl(fd_, F_GETFL, 0);
+    if (flag_ < 0)
+      return flag_;
+    
+    auto ret = fcntl(fd_, F_SETFL, flag_ | O_NONBLOCK);
+    if (ret < 0)
+      return ret;
+  }
+  
+  int Reset() {
+    int ret = fcntl(fd_, F_SETFL, flag_) < 0;
+    if (ret < 0)
+      return ret;
+  }
+  
+  ~SetNonblock() {
+    Reset();
+  }
+  
+ private:
+  const int fd_;
+  int flag_ = fcntl(fd_, F_GETFL, 0);
+};
+
 int TcpSocket::Connect(const std::string &address, uint16_t port,
                        uint64_t milliseconds) {
   sockaddr_in addr{AF_INET, htons(port)};
@@ -56,6 +85,7 @@ int TcpSocket::Read(char *first, char *last, uint64_t milliseconds) {
   if (ret <= 0)
     return ret;
   
+  SetNonblock non_block(file_descriptor_);
   return read(file_descriptor_, first, last-first);
 }
 int TcpSocket::Write(const char *first, const char *last,
