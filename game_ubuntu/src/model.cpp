@@ -1,8 +1,8 @@
 #include "model.h"
 #include <iostream>
 #include <thread>
-
 #include "cursor.h"
+
 
 void Model::GeneSnake() {
   snake_.push_back(Coord(5, 7));
@@ -41,17 +41,32 @@ int Model::PlayerScore() {
   return snake_.size();
 }
 
+void Model::SetCoord(int x, int y) {
+  coord_.x = x;
+  coord_.y = y;
+}
+
 bool Model::Run(char &index) {
   GeneEgg();
   map_.ResetMap();
   map_.SnkOnMap(snake_);
   map_.EggOnMap(egg_);
-  //View::PrintMapSplit(map_, snake_, map_, snake_);
+  SetCoord(0, 0);
+  SingleView SV(coord_);
+  SetCoord(0, 40);
+  SingleView SV2(coord_);
+  View *view = &SV;
+  View *view2 = &SV2;
   view->SetMap(map_);
+  view2->SetMap(map_);
   SV.SetScore(PlayerScore());
+  SV2.SetScore(PlayerScore());
   SV.PrintMap();
+  SV2.PrintMap();
+  view->SyncRefresh(view2);
+  view2->SyncRefresh(view);
+  //view->Refresh();
   Cursor::Get().InsertCh('\n');
-  //std::cout << "Length of your Snake : " << snake_.size() << std::endl;
   std::chrono::duration<double, std::milli> ms(100);
   std::this_thread::sleep_for(ms);
   char tempIndex = Cursor::Get().GetInput();

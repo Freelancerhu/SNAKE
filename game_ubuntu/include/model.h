@@ -25,10 +25,11 @@ public:
   int PlayerScore();
 
   bool Run(char &index);
+
+  void SetCoord(int x, int y);
 private:
   Map map_;
-  SingleView SV;
-  View *view = &SV;
+  Coord coord_;
   ControlSnake control_snake_;
   std::vector<Coord> snake_;
   std::vector<Coord> egg_;
