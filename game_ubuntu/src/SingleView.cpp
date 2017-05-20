@@ -18,18 +18,43 @@ ViewInterface &SingleView::SetMap(const Map &map) {
 //}
 
 ViewInterface &SingleView::SyncRefresh(ViewInterface *view) {
-  player_view_ = view;
+  if (player_view_ != view) {
+    player_view_ = view;
+    player_view_->SyncRefresh(this);
+  }
   return *this;
 }
+
+template <class T>
+class TempSwitch {
+ public:
+  TempSwitch(T &var, const T &val) : var_(var), temp_(var) {
+    var = val;
+  }
+  
+  T &Get() {
+    return temp_;
+  }
+  
+  const T &Get() const {
+    return temp_;
+  }
+  
+  ~TempSwitch() {
+    var_ = temp_;
+  }
+  
+ private:
+  T &var_;
+  T temp_;
+};
 
 ViewInterface &SingleView::Refresh() {
   PrintMap();
 
   if (player_view_ != nullptr) {
-    auto temp = player_view_;
-    player_view_ = nullptr;
-    temp->Refresh();
-    player_view_ = temp;
+    TempSwitch<ViewInterface *> guard(player_view_, nullptr);
+    guard.Get()->Refresh();
   }
   
   return *this;

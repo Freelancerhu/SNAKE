@@ -61,8 +61,6 @@ TwoViews InitTwoView() {
   auto view2 = std::make_unique<SingleView>(Coord(0, 40));
   
   view1->SyncRefresh(view2.get());
-  view2->SyncRefresh(view1.get());
-  
   return {std::move(view1), std::move(view2)};
 }
 
