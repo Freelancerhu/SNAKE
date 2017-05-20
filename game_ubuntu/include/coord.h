@@ -2,7 +2,7 @@
 #define _SNAKE_COORD_H
 
 struct Coord {
-  Coord();
+  Coord() = default;
   Coord(int x1, int y1);
   
   int x = 0;

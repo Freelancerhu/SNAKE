@@ -1,15 +1,15 @@
 #include "SingleView.h"
-#include <iostream>
-//ingleView::SingleView() {}
 
-SingleView::SingleView(Coord &crd_) {
-  coord_ = crd_;
+#include <sstream>
+
+SingleView::SingleView(const Coord &crd) {
+  coord_ = crd;
 }
 
 SingleView::~SingleView() {};
 
-View& SingleView::SetMap(const Map& map_) {
-  single_view_map_ = map_.CopyMap();
+ViewInterface &SingleView::SetMap(const Map &map) {
+  single_view_map_ = map.CopyMap();
   return *this;
 }
 
@@ -17,26 +17,29 @@ View& SingleView::SetMap(const Map& map_) {
 //  return *this;
 //}
 
-View& SingleView::SyncRefresh(View *view_) {
-  player_view_ = view_;
+ViewInterface &SingleView::SyncRefresh(ViewInterface *view) {
+  player_view_ = view;
   return *this;
 }
 
-View& SingleView::Refresh() {
-  Cursor::Get().Refresh();
+ViewInterface &SingleView::Refresh() {
+  PrintMap();
+
   if (player_view_ != nullptr) {
-    player_view_->Refresh();
+    auto temp = player_view_;
+    player_view_ = nullptr;
+    temp->Refresh();
+    player_view_ = temp;
   }
+  
   return *this;
 }
 
-void SingleView::SetScore(const int &player_score_) {
-  score_ = player_score_;
+ViewInterface &SingleView::SetScore(int score) {
+  score_ = score;
 }
 
 void SingleView::PrintMap() {
-	//Cursor::Get().Clear();
-	char STR[] = "length of your snake : ";
   int row = 0;
   for (int i = 0; i < single_view_map_.size(); ++i) {
 	Cursor::Get().PoseCursor(i + coord_.x, coord_.y);
@@ -52,7 +55,11 @@ void SingleView::PrintMap() {
     row = i + coord_.x;
   }
   ++row;
-	Cursor::Get().InsertStringAt(row, coord_.y, STR);
-	Cursor::Get().InsertChAt(row, coord_.y + 24, score_+ '0');
-  this->Refresh();
+	Cursor::Get().InsertStringAt(row, coord_.y, "length of your snake : ");
+  
+  std::ostringstream format;
+  format << score_;
+	Cursor::Get().InsertStringAt(row, coord_.y + 24, format.str().c_str());
+  Cursor::Get().InsertCh('\n');
+  Cursor::Get().Refresh();
 }

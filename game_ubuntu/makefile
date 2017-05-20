@@ -1,10 +1,10 @@
-IDIR=include
-SDIR=src
+IDIR = include
+SDIR = src
 
-CC=g++
-FLAG=-std=c++11
+CC = g++
+FLAG = -std=c++14
 
-OBJS=control-snake.o coord.o cursor.o map.o ViewInterface.o model.o SingleView.o
+OBJS = control-snake.o coord.o cursor.o map.o ViewInterface.o model.o SingleView.o
 
 all : main clean
 

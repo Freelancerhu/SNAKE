@@ -6,37 +6,34 @@
 #include "map.h"
 #include <vector>
 #include "cursor.h"
-class SingleView : public View{
-public://SingleView();  
-
-  SingleView(Coord &crd_);
+class SingleView : public ViewInterface {
+ public:
+  explicit SingleView(const Coord &crd);
+  
+  SingleView(const SingleView &single_view) = delete;
+  SingleView(SingleView &&single_view) = default;
 
   ~SingleView();
+  
+  SingleView &operator=(const SingleView &single_view) = delete;
+  SingleView &operator=(SingleView &&single_view) = delete;
 
-  View& SetMap(const Map& map_);
+  ViewInterface &SetMap(const Map &map) override;
 
   //View& SetInfo(int sco, const std::string &infoStr);
 
-  View& SyncRefresh(View *view_);
+  ViewInterface &SyncRefresh(ViewInterface *view) override;
 
-  View& Refresh();
-	
+  ViewInterface &Refresh() override;
+
+  ViewInterface &SetScore(int score) override;
+
+ private:
   void PrintMap();
-
-  void SetScore(const int &player_score_);
-
-  SingleView(const SingleView &single_view_) = delete;
-
-  SingleView(SingleView &&single_view_) = default;
-
-  SingleView &operator=(const SingleView &single_view_) = delete;
-
-  SingleView &operator=(SingleView &&single_view_) = delete;
-
-private:
+  
   std::vector<std::vector<int>> single_view_map_;
   Coord coord_;
-  View *player_view_ = nullptr;
+  ViewInterface *player_view_ = nullptr;
   int score_ = 0;
 };
 

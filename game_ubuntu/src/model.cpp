@@ -1,6 +1,12 @@
+
 #include "model.h"
+
+#include <cassert>
+
 #include <iostream>
+#include <memory>
 #include <thread>
+
 #include "cursor.h"
 
 
@@ -46,31 +52,40 @@ void Model::SetCoord(int x, int y) {
   coord_.y = y;
 }
 
+using TwoViews = std::pair<std::unique_ptr<ViewInterface>,
+                           std::unique_ptr<ViewInterface> >;
+
+
+TwoViews InitTwoView() {
+  auto view1 = std::make_unique<SingleView>(Coord(0, 0));
+  auto view2 = std::make_unique<SingleView>(Coord(0, 40));
+  
+  view1->SyncRefresh(view2.get());
+  view2->SyncRefresh(view1.get());
+  
+  return {std::move(view1), std::move(view2)};
+}
+
+void SetViews(TwoViews &views, const Map &map1, const Map &map2, int score1,
+              int score2) {
+  views.first->SetScore(score1).SetMap(map1);
+  views.second->SetScore(score2).SetMap(map2).Refresh();
+}
+
 bool Model::Run(char &index) {
-  GeneEgg();
-  map_.ResetMap();
-  map_.SnkOnMap(snake_);
-  map_.EggOnMap(egg_);
-  SetCoord(0, 0);
-  SingleView SV(coord_);
-  SetCoord(0, 40);
-  SingleView SV2(coord_);
-  View *view = &SV;
-  View *view2 = &SV2;
-  view->SetMap(map_);
-  view2->SetMap(map_);
-  SV.SetScore(PlayerScore());
-  SV2.SetScore(PlayerScore());
-  SV.PrintMap();
-  SV2.PrintMap();
-  view->SyncRefresh(view2);
-  view2->SyncRefresh(view);
-  //view->Refresh();
-  Cursor::Get().InsertCh('\n');
-  std::chrono::duration<double, std::milli> ms(100);
-  std::this_thread::sleep_for(ms);
-  char tempIndex = Cursor::Get().GetInput();
-  if (tempIndex != ERR) {
+
+  auto views = InitTwoView();
+  for (;;) {
+    GeneEgg();
+    map_.ResetMap();
+    map_.SnkOnMap(snake_);
+    map_.EggOnMap(egg_);
+  
+    SetViews(views, map_, map_, PlayerScore(), PlayerScore());
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
+    char tempIndex = Cursor::Get().GetInput();
     switch (tempIndex) {
       case 'w':
         if (snake_[1].x - snake_[0].x != -1)
@@ -91,16 +106,10 @@ bool Model::Run(char &index) {
       default:
         ;
     }
-    if (control_snake_.Control(snake_, egg_, index)) {
-        return true;
-    } else {
-        return false;
-    }
-  } else {
-    if (control_snake_.Control(snake_, egg_, index)) {
-        return true;
-    } else {
-        return false;
-    }
+    
+    if (control_snake_.Control(snake_, egg_, index) == false)
+      break;
   }
+  
+  return false;
 }
