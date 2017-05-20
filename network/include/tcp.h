@@ -10,7 +10,10 @@
 
 #include <chrono>
 #include <stdexcept>
+#include <type_traits>
 #include <utility>
+
+#include <iostream>
 
 namespace network {
   
@@ -91,12 +94,13 @@ class TcpSocket {
   }
 
   template <class Rep, class Period>
-  int Read(char *first, char *last,
-           const std::chrono::duration<Rep, Period> &duration) {
-    assert(first<=last);
-    assert(duration.count() > 0);
-    return Read(first, last,
-                static_cast<std::chrono::milliseconds>(duration).count());
+  int ReadAByte(const std::chrono::duration<Rep, Period> &duration) {
+    char c;
+    int ret = Read(&c, &c+1,
+                   static_cast<std::chrono::milliseconds>(duration).count());
+    if (ret <= 0)
+      return std::char_traits<char>::eof();
+    return c;
   }
   template <class Rep, class Period>
   int Write(const char *first, const char *last,
@@ -119,11 +123,15 @@ class TcpSocket {
     return strerror(errno);
   }
   
+  void Swap(TcpSocket &other) {
+    std::swap(file_descriptor_, other.file_descriptor_);
+  }
+  
  private:
   TcpSocket Accept(uint64_t milliseconds);
-  int Connect(const std::string &address, uint16_t port, uint64_t milliseconds);
-  int Read(char *first, char *last, uint64_t milliseconds);
-  int Write(const char *first, const char *last, uint64_t milliseconds);
+  int Connect(const std::string &address, uint16_t port, int64_t milliseconds);
+  int Read(char *first, char *last, int64_t milliseconds);
+  int Write(const char *first, const char *last, int64_t milliseconds);
   
   int GetLocalHandler() const {
     return file_descriptor_;

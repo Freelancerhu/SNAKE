@@ -37,7 +37,7 @@ struct SetNonblock {
 };
 
 int TcpSocket::Connect(const std::string &address, uint16_t port,
-                       uint64_t milliseconds) {
+                       int64_t milliseconds) {
   sockaddr_in addr{AF_INET, htons(port)};
   if (inet_pton(AF_INET, address.c_str(), &addr.sin_addr) != 1)
     throw std::runtime_error("inet_pton failed with: " + address + __func__);
@@ -79,22 +79,22 @@ TcpSocket TcpSocket::Accept(uint64_t milliseconds) {
   return TcpSocket(accept(file_descriptor_, nullptr, nullptr));
 }
 
-int TcpSocket::Read(char *first, char *last, uint64_t milliseconds) {
+int TcpSocket::Read(char *first, char *last, int64_t milliseconds) {
   pollfd fdarray[1] = {{file_descriptor_, POLLIN, 0}};
   auto ret = poll(fdarray, 1, milliseconds);
   if (ret <= 0)
     return ret;
   
-  SetNonblock non_block(file_descriptor_);
+//  SetNonblock non_block(file_descriptor_);
   return read(file_descriptor_, first, last-first);
 }
 int TcpSocket::Write(const char *first, const char *last,
-                     uint64_t milliseconds) {
+                     int64_t milliseconds) {
   pollfd fdarray[1] = {{file_descriptor_, POLLOUT, 0}};
   auto ret = poll(fdarray, 1, milliseconds);
   if (ret <= 0)
     return ret;
-  
+
   return write(file_descriptor_, first, last-first);
 }
 
