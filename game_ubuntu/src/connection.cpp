@@ -18,8 +18,7 @@ std::chrono::milliseconds Connection::SendMap(const Map &map) {
   return session_.Write(str.c_str(), str.length() + 1);
 }
 
-std::chrono::milliseconds 
-Connection::ReceiveMaps(std::list<std::pair<Map, time_point> > &list) {
+std::chrono::milliseconds Connection::ReceiveMaps(ListType &list) {
   auto start = std::chrono::steady_clock::now();
   
   char buff[1024];
@@ -45,6 +44,8 @@ Connection::ReceiveMaps(std::list<std::pair<Map, time_point> > &list) {
       if (last != buff_.end())
         std::advance(last, 1);
       buff_.erase(buff_.begin(), last);
+    } else {
+      break;
     }
   }
   

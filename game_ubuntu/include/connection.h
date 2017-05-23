@@ -10,7 +10,8 @@
 
 class Connection {
  public:
-  using time_point = std::chrono::steady_clock::time_point;
+  using TimePoint = std::chrono::steady_clock::time_point;
+  using ListType = std::list<std::pair<Map, TimePoint> >;
   
   Connection() = default;
   Connection(const std::string &ip_address);
@@ -27,8 +28,7 @@ class Connection {
 
   virtual std::chrono::milliseconds SendMap(const Map &);
 
-  virtual std::chrono::milliseconds
-  ReceiveMaps(std::list<std::pair<Map, time_point> > &);
+  virtual std::chrono::milliseconds ReceiveMaps(ListType &);
 
   virtual int Disconnect();
   
