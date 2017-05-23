@@ -79,7 +79,7 @@ bool Model::Run(char &index) {
     map_.SnkOnMap(snake_);
     map_.EggOnMap(egg_);
   
-    SetViews(views, map_, map_, PlayerScore(), PlayerScore());
+    SetViews(views, temp, temp, PlayerScore(), PlayerScore());
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     

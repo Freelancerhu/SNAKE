@@ -30,6 +30,10 @@ class Session {
   
   virtual std::chrono::milliseconds Write(const char *source, int n);
   
+  virtual int Close() {
+    return socket_.Close();
+  }
+  
  private:
   TcpSocket socket_;
 };
