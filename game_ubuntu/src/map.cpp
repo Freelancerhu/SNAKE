@@ -2,6 +2,8 @@
 
 #include <cstddef>
 
+#include <sstream>
+
 Map::Map() {}
 
 Map::~Map() = default;
@@ -50,4 +52,40 @@ int Map::MapVal(int &x, int &y) const {
 
 std::vector<std::vector<int>> Map::CopyMap() const {
   return game_map_;
+}
+
+std::string Map::Serialize() const {
+  std::ostringstream format;
+  format << 'M' << game_map_.size() << ' ';
+  for (auto &row : game_map_) {
+    format << row.size() << ' ';
+    for (auto ele : row)
+      format << ele << ' ';
+  }
+  format << 'E';
+  return format.str();
+}
+
+void Map::Deserialize(const std::string &str) {
+  std::vector<std::vector<int>> temp_map;
+  std::istringstream format(str);
+  if(format.get() != 'M')
+    throw std::runtime_error("Deserialize map failed, code 1");
+  
+  int rows = 0;
+  format >> rows;
+  temp_map.resize(rows);
+
+  for (auto &row : temp_map) {
+    int cols = 0;
+    format >> cols;
+    row.resize(cols);
+    
+    for (auto &ele : row)
+      format >> ele;
+  }
+  
+  if (!format)
+    throw std::runtime_error("Deserialize map failed, code 2");
+  game_map_ = std::move(temp_map);
 }

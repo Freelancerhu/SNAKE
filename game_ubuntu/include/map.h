@@ -1,6 +1,7 @@
 #ifndef _SNAKEMAP_H
 #define _SNAKEMAP_H
 
+#include <string>
 #include <vector>
 
 #include "coord.h"
@@ -26,6 +27,10 @@ public:
   int MapVal(int &x, int &y) const;
 
   std::vector<std::vector<int>> CopyMap() const;
+  
+  std::string Serialize() const;
+  void Deserialize(const std::string &str);
+  
 private:
   std::vector<std::vector<int>> game_map_;
 };
