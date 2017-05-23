@@ -1,4 +1,4 @@
-OBJS = tcp.o
+OBJS = tcp.o session.o
 
 OBJS_LOCATION = $(patsubst %.o, bin/%.o, $(OBJS))
 

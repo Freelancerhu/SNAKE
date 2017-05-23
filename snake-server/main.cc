@@ -7,9 +7,8 @@
 #include <iterator>
 #include <list>
 
+#include "session.h"
 #include "tcp.h"
-
-using network::TcpSocket;
 
 bool Check(const char *first, const char *last) {
   static const char token[] = "SNAKESNAKE";
@@ -17,16 +16,12 @@ bool Check(const char *first, const char *last) {
   return std::equal(first, last, token, token+10);
 }
 
-class Session {
+class ServerSession : public network::Session {
  public:
-  Session() = default;
-  
-  Session(TcpSocket &&socket) : socket_(std::move(socket)) {}
-  
-  TcpSocket AdaptSocket(TcpSocket &&socket) {
-    socket.Swap(socket_);
-    return std::move(socket);
-  }
+  using Session::Session;
+  using Session::AdaptSocket;
+  using Session::Read;
+  using Session::Write;
   
   bool IsValid() {
     char buff[10];
@@ -35,53 +30,12 @@ class Session {
     int n = Read(buff, 10, time_out);
     return Check(buff, buff+n);
   }
-  
-  int Read(char *s, int size, std::chrono::milliseconds &time_out) {
-    auto start = std::chrono::steady_clock::now();
-    int count = 0;
-    for (;;) {
-      if (count == size)
-        break;
-      
-      int byte_read = socket_.ReadAByte(time_out);
-      
-      if (byte_read == std::char_traits<char>::eof())
-        break;
-      
-      s[count++] = byte_read;
-      time_out -= std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::steady_clock::now() - start);
-      if (time_out.count() <= 0)
-        break;
-    }
-
-    return count;
-  }
-  
-  std::chrono::milliseconds Write(const char *source, int n) {
-    auto start = std::chrono::steady_clock::now();
-    const int total_bytes = n;
-    int bytes_writen = 0;
-    while (bytes_writen < total_bytes) {
-      int size = socket_.Write(source + bytes_writen, source + n);
-      if (size < 0)
-        throw std::runtime_error("Session write failed");
-      bytes_writen += size;
-    }
-    
-    return std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::steady_clock::now() - start);
-  }
-  
- private:
-  TcpSocket socket_;
 };
-
 
 int main() {
   signal(SIGPIPE, SIG_IGN);
   
-  TcpSocket server;
+  network::TcpSocket server;
   
   server.Listen("127.0.0.1", 12587);
   char buff[10240];
@@ -89,15 +43,15 @@ int main() {
   for (;;) {
     try {
       std::cerr << "Waiting" << std::endl;
-      Session session_a(server.Accept());
+      ServerSession session_a(server.Accept());
       std::cerr << "1 Connected" << std::endl;
       if (session_a.IsValid() == false)
         continue;
       std::cerr << "1 Valid" << std::endl;
       
-      Session session_b;
+      ServerSession session_b;
       for (;;) {
-        TcpSocket socket = server.Accept();
+        network::TcpSocket socket = server.Accept();
         std::cerr << "2 Connected" << std::endl;
         session_b.AdaptSocket(std::move(socket));
         if (session_b.IsValid()) {
