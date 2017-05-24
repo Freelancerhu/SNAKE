@@ -94,7 +94,7 @@ void Model::Run(char &index) {
     
     SetViews(views, map_, peer_map, PlayerScore(), PlayerScore());
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
     
     char tempIndex = Cursor::Get().GetInput();
     switch (tempIndex) {

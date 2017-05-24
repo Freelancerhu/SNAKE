@@ -11,6 +11,7 @@ void Connection::ConnectToServer(const std::string &ip_address) {
   if (socket.Connect(ip_address, 12500))
     throw std::runtime_error("Cannot connect to server");
   session_.AdaptSocket(std::move(socket));
+  session_.Write("SNAKESNAKE", 10);
 }
 
 std::chrono::milliseconds Connection::SendMap(const Map &map) {
