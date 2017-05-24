@@ -9,11 +9,12 @@ FLAG = -std=c++14 -fmax-errors=1
 LIBRARY = -lncurses -ltcp
 
 OBJS = map.o connection.o
+PROGRAM = test-snake.cc
 
 all : main clean
 
 main : $(OBJS)
-	$(CC) $(FLAG) $(INCLUDEDIR) $(LIBRARYDIR) test-connection.cc\
+	$(CC) $(FLAG) $(INCLUDEDIR) $(LIBRARYDIR) $(PROGRAM)\
 		$(OBJS) $(LIBRARY)
 
 %.o : $(SDIR)%.cpp $(IDIR)%.h
