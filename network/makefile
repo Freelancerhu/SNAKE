@@ -8,7 +8,7 @@ main : make_dir $(OBJS)
 	ar -cvq lib/libtcp.a bin/*.o
 
 make_dir :
-	mkdir lib/ bin/
+	mkdir -p lib/ bin/
 
 %.o : src/%.cc include/%.h
 	g++ -c $< -O4 -o bin/$@ -I include/
