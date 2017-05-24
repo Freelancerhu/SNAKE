@@ -81,7 +81,6 @@ void SingleView::PrintMap() {
   }
   ++row;
 	Cursor::Get().InsertStringAt(row, coord_.y, "length of your snake : ");
-  
   std::ostringstream format;
   format << score_;
 	Cursor::Get().InsertStringAt(row, coord_.y + 24, format.str().c_str());

@@ -11,8 +11,7 @@ int main() {
   model.GeneSnake();
 
   char index = 'd';
-  while (model.Run(index));
-  //Cursor::Get().Clear();
+  model.Run(index);
   Cursor::Get().InsertCh('g');
   Cursor::Get().InsertCh('g');
   Cursor::Get().Refresh();

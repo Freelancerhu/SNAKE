@@ -10,6 +10,7 @@
 #include "coord.h"
 #include "ViewInterface.h"
 #include "SingleView.h"
+#include "connection.h"
 
 class Model {
 public:
@@ -24,10 +25,11 @@ public:
   
   int PlayerScore();
 
-  bool Run(char &index);
+  void Run(char &index);
 
   void SetCoord(int x, int y);
 private:
+  Connection c_1_;
   Map map_;
   Coord coord_;
   ControlSnake control_snake_;

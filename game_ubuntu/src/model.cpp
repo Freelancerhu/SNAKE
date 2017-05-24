@@ -70,16 +70,23 @@ void SetViews(TwoViews &views, const Map &map1, const Map &map2, int score1,
   views.second->SetScore(score2).SetMap(map2).Refresh();
 }
 
-bool Model::Run(char &index) {
-
+void Model::Run(char &index) {
   auto views = InitTwoView();
+  c_1_.ConnectToServer("127.0.0.1");
+
   for (;;) {
     GeneEgg();
     map_.ResetMap();
     map_.SnkOnMap(snake_);
     map_.EggOnMap(egg_);
-  
-    SetViews(views, temp, temp, PlayerScore(), PlayerScore());
+
+    Connection::ListType list;
+    c_1_.SendMap(map_);
+    c_1_.ReceiveMaps(list);
+    //assert(list.size() == 1);
+    auto received_map_ = list.front().first;
+    
+    SetViews(views, map_, received_map_, PlayerScore(), PlayerScore());
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     
@@ -104,10 +111,7 @@ bool Model::Run(char &index) {
       default:
         ;
     }
-    
     if (control_snake_.Control(snake_, egg_, index) == false)
       break;
   }
-  
-  return false;
 }
