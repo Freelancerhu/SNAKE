@@ -42,19 +42,20 @@ int main() {
   }
   
   int k = 0;
+  Connection::ListType list;
   for (;;) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
     connection.SendMap(map[k++%2]);
     
-    Connection::ListType list;
+    
     connection.ReceiveMaps(list);
     
-    auto received_map = list.front().first;
+    auto received_map = list.back().first;
   
     for (auto &row : received_map.game_map_) {
       for (auto ele : row)
-        std::cout << ele << " ";
+        std::cout << ele;
       std::cout << std::endl;
     }
   }
