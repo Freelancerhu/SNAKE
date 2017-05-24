@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include <fstream>
 #include <sstream>
 
 Map::Map() {}
@@ -68,6 +69,7 @@ std::string Map::Serialize() const {
 
 void Map::Deserialize(const std::string &str) {
   std::vector<std::vector<int>> temp_map;
+  
   std::istringstream format(str);
   if(format.get() != 'M')
     throw std::runtime_error("Deserialize map failed, code 1");

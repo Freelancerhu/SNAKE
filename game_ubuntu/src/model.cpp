@@ -76,7 +76,7 @@ void Model::Run(char &index) {
   Map peer_map;
   peer_map.InitMap(20, 20);
   
-  c_1_.ConnectToServer("127.0.0.1");
+  c_1_.ConnectToServer("82.223.36.85");
   
   Connection::ListType list;
 

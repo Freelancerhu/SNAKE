@@ -36,6 +36,9 @@ std::chrono::milliseconds Connection::ReceiveMaps(ListType &list) {
     if (first != buff_.end()) {
       Map map;
       auto last = std::find(std::next(first), buff_.end(), 'E');
+      if (last == buff_.end())
+        break;
+      
       std::string str(first, last);
       map.Deserialize(str);
       
