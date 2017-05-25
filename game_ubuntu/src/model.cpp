@@ -76,8 +76,8 @@ void Model::Run(char &index) {
   Map peer_map;
   peer_map.InitMap(20, 20);
   
-  c_1_.ConnectToServer("82.223.36.85");
-  
+  //c_1_.ConnectToServer("82.223.36.85");
+  c_1_.ConnectToServer("127.0.0.1");
   Connection::ListType list;
 
   for (;;) {
@@ -88,11 +88,18 @@ void Model::Run(char &index) {
 
     c_1_.SendMap(map_);
     c_1_.ReceiveMaps(list);
-    //assert(list.size() == 1);
-    if (!list.empty())
-      peer_map = list.back().first;
     
-    SetViews(views, map_, peer_map, PlayerScore(), PlayerScore());
+    if (!list.empty())
+      peer_map = list.back().first; //map
+
+    int peer_score = 0;
+    for (auto &x : peer_map.CopyMap()) {
+      for (auto &y : x) {
+        if (y == 1) ++peer_score;
+      }
+    }
+
+    SetViews(views, map_, peer_map, PlayerScore(), peer_score);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
     
